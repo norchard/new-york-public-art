@@ -59,8 +59,8 @@
           var map = new mapboxgl.Map({
               container: 'map', // container id
               style: 'mapbox://styles/mapbox/light-v9', //hosted style id
-              center: [-73.9750, 40.7568], // starting position
-              zoom: 12 // starting zoom
+              center: [-73.9700, 40.7568], // starting position
+              zoom: 10 // starting zoom
           });
 
           var container = map.getCanvasContainer();
@@ -124,9 +124,9 @@
             // console.log('open!');
             // console.log(d);
 
-            document.getElementById(d.properties.number).scrollIntoView();
+            document.getElementById(d.properties.number).scrollIntoView()
 
-            map.flyTo({center: d.geometry.coordinates});
+            map.flyTo({center: d.geometry.coordinates})
 
             // d3.select('text').select(this.childNodes)
             //   .attr('class', 'hide');
@@ -137,18 +137,18 @@
 
             var formatDate = d3.timeFormat("%B")
 
-            var start = new Date(d.properties.from_date);
-            var end = new Date(d.properties.to_date);
+            var start = new Date(d.properties.from_date)
+            var end = new Date(d.properties.to_date)
 
             artDiv.append('span')
               .html(d.properties.description)
               .append('button')
               .html('close')
-              .on("click", function() { close(); });
+              .on("click", function() { close() })
 
             svg.selectAll("path")
               .filter(function(){return d3.select(this).attr("id") == d.properties.number; })
-              .attr('class', 'select');
+              .attr('class', 'select')
 
 
             // function httpGetAsync(theUrl, callback)
@@ -170,53 +170,69 @@
             //   xhr.send(null);
             // }
 
-            // function toQueryString(paramsObject) {
-            //   return Object
-            //     .keys(paramsObject)
-            //     .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
-            //     .join('&')
-            //   ;
-            // }
-
+            function toQueryString(paramsObject) {
+              return Object
+                .keys(paramsObject)
+                .map(key => `${encodeURIComponent(key)}=${paramsObject[key]}`)
+                .join('&')
+              ;
+            }
+            //
             // var parameters = {
+            //   key: 'AIzaSyBuoyL7dU_KmnG_MYB9i1uG2meT_BL9qcg',
             //   cx: '008601265566446087848:kj2rcgrvxrk',
             //   imgType: 'photo',
             //   searchType: 'image',
+            //   imageSize: 'large',
             //   num: 1,
-            //   q: d.properties.name + ' ' + d.properties.artist + ' New York'
+            //   tbs: 'iar:w',
+            //   q: `${d.properties.name.replace(/\s/g,'+')}+${d.properties.artist.replace(/\s/g,'+')}+New+York`
             // };
 
             function httpGetAsync(theUrl, callback)
             {
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", theUrl, true); // true for asynchronous
-                xhr.setRequestHeader('Ocp-Apim-Subscription-Key', '03235899f7754611a972827f7ccfc286');
+                var xhr = new XMLHttpRequest()
+                xhr.open("GET", theUrl, true) // true for asynchronous
+                xhr.setRequestHeader('Ocp-Apim-Subscription-Key', '03235899f7754611a972827f7ccfc286')
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState == 4 && xhr.status == 200)
-                        callback(xhr.responseText);
+                        callback(xhr.responseText)
                 };
-                xhr.send(null);
+                xhr.send(null)
             }
 
-            var searchQuery = '\"' + d.properties.name + '\"+\"' + d.properties.artist + '\"' + '&count=1&mkt=en-us&imageType=Photo&size=large&aspect=wide';
+            var searchQuery = `${d.properties.name.replace(/\s/g,'+')}+%22${d.properties.artist.replace(/\s/g,'+')}%22+NYC`
+
+            var searchParams = {
+              count: 1,
+              aspect: 'wide',
+              mkt: 'en-us',
+              imageType: 'Photo',
+              size: 'large',
+              q: searchQuery
+            }
 
             // var searchQuery = query.replace(/\s/g,'+');
 
-            console.log(searchQuery);
+            console.log(toQueryString(searchParams))
 
-            var searchURL = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?q=' + searchQuery;
+            var searchURL = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?q=' + toQueryString(searchParams)
             // var searchURL = 'https://www.googleapis.com/customsearch/v1?' + toQueryString(parameters);
 
+            console.log(searchURL)
+
+            //console.log(searchURL)
+
             httpGetAsync(searchURL, function(response) {
-                var data = JSON.parse(response);
-                console.log(data.value[0].contentUrl);
+                var data = JSON.parse(response)
+                console.log(data)
+                // console.log(data.value[0].contentUrl);
 
                 artDiv.select('span')
                   .append('div').attr('class','image-div')
-                  .append('img').attr('src',data.value[0].contentUrl).attr('class','image');
+                  .append('img').attr('src',data.value[0].contentUrl).attr('class','image')
+                  // .append('img').attr('src',data.items[0].link).attr('class','image')
             });
-
-            key = 'AIzaSyAKz7rXL9SBUhwl15DTYoPq_u0mW2rVI1U'
 
             // svg.selectAll("path")
             //   .data(d)
