@@ -78,31 +78,11 @@ function drawMap(geojson){
         .html(d.properties.description)
         .append('button')
         .html('close')
-        .on("click", function() { close() })
+        .on("click", close)
 
       svg.selectAll("path")
         .filter(function(){return d3.select(this).attr("id") == d.properties.number; })
         .attr('class', 'select')
-
-
-      // function httpGetAsync(theUrl, callback)
-      // {
-      //   var xhr = new XMLHttpRequest();
-      //   xhr.open("GET", theUrl, true);
-      //   xhr.onload = function (e) {
-      //     if (xhr.readyState === 4 && xhr.status === 200) {
-      //       if (xhr.status === 200) {
-      //         console.log(xhr.responseText);
-      //       } else {
-      //         console.error(xhr.statusText);
-      //       }
-      //     }
-      //   };
-      //   xhr.onerror = function (e) {
-      //     console.error(xhr.statusText);
-      //   };
-      //   xhr.send(null);
-      // }
 
       function toQueryString(paramsObject) {
         return Object
@@ -111,17 +91,6 @@ function drawMap(geojson){
           .join('&')
         ;
       }
-      //
-      // var parameters = {
-      //   key: 'AIzaSyBuoyL7dU_KmnG_MYB9i1uG2meT_BL9qcg',
-      //   cx: '008601265566446087848:kj2rcgrvxrk',
-      //   imgType: 'photo',
-      //   searchType: 'image',
-      //   imageSize: 'large',
-      //   num: 1,
-      //   tbs: 'iar:w',
-      //   q: `${d.properties.name.replace(/\s/g,'+')}+${d.properties.artist.replace(/\s/g,'+')}+New+York`
-      // };
 
       function httpGetAsync(theUrl, callback)
       {
@@ -146,16 +115,7 @@ function drawMap(geojson){
         q: searchQuery
       }
 
-      // var searchQuery = query.replace(/\s/g,'+');
-
-      // console.log(toQueryString(searchParams))
-
       var searchURL = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?q=' + toQueryString(searchParams)
-      // var searchURL = 'https://www.googleapis.com/customsearch/v1?' + toQueryString(parameters);
-
-      // console.log(searchURL)
-
-      //console.log(searchURL)
 
       httpGetAsync(searchURL, function(response) {
           var data = JSON.parse(response)
@@ -190,7 +150,7 @@ function drawMap(geojson){
     update()
 
     function projectPoint(lon, lat) {
-          var point = map.project(new mapboxgl.LngLat(lon, lat));
+      var point = map.project(new mapboxgl.LngLat(lon, lat));
       this.stream.point(point.x, point.y);
-  }
+    }
 }
