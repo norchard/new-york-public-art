@@ -1,13 +1,9 @@
-var imgUrls = {}
-
 // TODO: Update data source and process data:
 // 'https://www.nycgovparks.org/bigapps/DPR_PublicArt_001.json'
 
 const mapAccessToken = 'pk.eyJ1Ijoibm9yY2hhcmQiLCJhIjoiY2oyMHcxNXNhMDUwMTMzbnVkcmJ1eWszdSJ9.Dx5NmmL0h6xm3cUE5jLuJg'
 
-d3.json("./data/artwork.json", function(err, data) {
-    drawMap(data)
-});
+d3.json("./data/artwork.json", (err, data) => drawMap(data))
 
 function createMap() {
   mapboxgl.accessToken = mapAccessToken
@@ -24,10 +20,10 @@ function createMap() {
 
 function drawMap(geojson){
 
-  const map = createMap()
+  var map = createMap()
 
   //Create d3 svg
-  const container = map.getCanvasContainer()
+  var container = map.getCanvasContainer()
   var svg = d3.select(container)
               .append("svg")
               .attr("width", "100%")
@@ -54,105 +50,112 @@ function drawMap(geojson){
                       else
                         return 8;
                    }))
-                  // .attr("d", d3.geoPath().projection(transform))
-                  .attr("fill", function(d) { return color(d.properties.number); })
+                  .attr("fill", d => color(d.properties.number))
                   .attr("stroke-width", 2)
                   .attr("stroke", "white")
-                  .attr('id', function(d) { return d.properties.number; })
-                  .on("click", function(d) { clickHandler(d) })
+                  .on("click", d => clickHandler(d, map))
 
-    geojson.forEach(function (artwork, index) {
-        d3.select('#text')
-          .append('div')
-          .attr('id', index)
+  geojson.forEach(function (artwork, index) {
+      artwork.properties.path = points.filter( (d,i) => { return i == index })
+      artwork.properties.div = d3.select('#text').append('div')
+
+      artwork.properties.div
           .attr('class', 'artwork')
-          .style('background-color',function(d) { return color(artwork.properties.number); })
-          .append('h2')
+          .style('background-color', d => { return color(index) })
+        .append('h2')
           .html(artwork.properties.name)
-          .on("click", function() { clickHandler(artwork) })
-          .append("p")
+          .on("click", () => { clickHandler(artwork, map) })
+        .append("p")
           .attr('class', 'artist')
-          .html( artwork.properties.artist);
-    });
+          .html( artwork.properties.artist)
 
-    function clickHandler(d) {
-      var divIndex = d.properties.number
-      close();
-
-      document.getElementById(divIndex).scrollIntoView()
-
-      map.flyTo({center: d.geometry.coordinates})
-
-      // d3.select('text').select(this.childNodes)
-      //   .attr('class', 'hide');
-
-      var artDiv = d3.selectAll('div')
-        .filter(function() { return d3.select(this).attr("id") == divIndex })
-
-      // TODO: add date
-      // var formatDate = d3.timeFormat("%B")
-      // var start = new Date(d.properties.from_date)
-      // var end = new Date(d.properties.to_date)
-
-      var span = artDiv.append('span')
-
-      span.html(d.properties.description)
-          .append('button')
-          .html('close')
-          .on("click", close)
-
-      var imgUrl = imgUrls.divIndex || getImage(d)
-      console.log("hi")
-      console.log(imgUrl)
-
-      span.append('div').attr('class','image-div')
-          .append('img').attr('src',imgUrl).attr('class','image')
-
-      svg.selectAll("path")
-         .filter(function(){return d3.select(this).attr("id") == divIndex; })
-         .attr('class', 'select')
-    }
-
-    function close() {
-      d3.selectAll("path").classed("select", false);
-
-      d3.selectAll('span')
-        .remove();
-    }
+  })
 
     function update() {
         points.attr("d", path);
     }
 
-    map.on("viewreset", update )
-    map.on("move", update )
+    map.on("viewreset", update)
+    map.on("move", update)
 
     update()
 }
 
+function clickHandler(d, map) {
+
+  function close() {
+    d3.selectAll("path").classed("select", false)
+    d3.selectAll('span').remove()
+  }
+
+  close()
+
+  var artDiv = d.properties.div
+  var artPath = d.properties.path
+
+  artDiv.node().scrollIntoView()
+  map.flyTo({center: d.geometry.coordinates})
+  artPath.attr('class', 'select')
+
+  // TODO: add date
+  // var formatDate = d3.timeFormat("%B")
+  // var start = new Date(d.properties.from_date)
+  // var end = new Date(d.properties.to_date)
+
+  var span = artDiv.append('span')
+
+  span.html(d.properties.description)
+      .append('button')
+      .html('close')
+      .on("click", close)
+
+  getImage(d)
+}
 
 function httpGetAsync(theUrl, callback) {
     var xhr = new XMLHttpRequest()
     xhr.open("GET", theUrl, true) // true for asynchronous
     xhr.setRequestHeader('Ocp-Apim-Subscription-Key', '03235899f7754611a972827f7ccfc286')
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = () => {
         if (xhr.readyState == 4 && xhr.status == 200)
             callback(xhr.responseText)
-    };
+    }
     xhr.send(null)
 }
 
+function toQueryString(paramsObject) {
+  return Object
+    .keys(paramsObject)
+    .map(key => `${encodeURIComponent(key)}=${paramsObject[key]}`)
+    .join('&')
+}
+
+var imgUrls = {}
+
 function getImage(d) {
-  function toQueryString(paramsObject) {
-    return Object
-      .keys(paramsObject)
-      .map(key => `${encodeURIComponent(key)}=${paramsObject[key]}`)
-      .join('&')
-    ;
+
+  var artDiv = d.properties.div
+  var artPath = d.properties.path
+  var artIndex = d.properties.number
+
+  function addImage(artDiv){
+    if (imgUrls[artIndex] != ""){
+      var imgDiv = artDiv.select('span')
+                         .append('div')
+                         .attr('class','image-div')
+
+      var img = imgDiv.append('img')
+                      .attr('class','image')
+                      .attr('id','image')
+
+      img.attr('src', imgUrls[artIndex])
+    }
   }
 
-  var searchQuery = `${d.properties.name.replace(/\s/g,'+')}+%22${d.properties.artist.replace(/\s/g,'+')}%22+NYC`
-  console.log(searchQuery)
+  if (imgUrls[artIndex]) {
+    addImage(artDiv)
+    return
+  }
 
   var searchParams = {
     count: 1,
@@ -160,21 +163,20 @@ function getImage(d) {
     mkt: 'en-us',
     imageType: 'Photo',
     size: 'large',
-    q: searchQuery
+    q: `${d.properties.name.replace(/\s/g,'+')}+%22${d.properties.artist.replace(/\s/g,'+')}%22+NYC`
   }
 
   var searchURL = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?q=' + toQueryString(searchParams)
-  console.log(searchURL)
 
-  httpGetAsync(searchURL, function(response) {
+  httpGetAsync(searchURL, response => {
       var data = JSON.parse(response)
-      console.log(data)
 
-      if (data.value.length > 0){
-        imgUrls.index = data.value[0].contentUrl
-        return data.value[0].contentUrl
+      console.log('hi from httpGetAsync')
+      if (data.value.length > 0) {
+        imgUrls[artIndex] = data.value[0].contentUrl
+        addImage(artDiv)
       } else {
-        return null
+        imgUrls[artIndex] = ""
       }
   })
 }
