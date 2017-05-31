@@ -1,7 +1,7 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: "macho", sans-serif;
+  font-family: "work sans", sans-serif;
 }
 
 svg {
@@ -9,13 +9,14 @@ svg {
 }
 
 h1 {
-  font-style: italic;
-  font-size: 50px;
-  color: #444444;
-  line-height: 0.9;
+  font-size: 60px;
+  color: #333;
+  font-weight: 400;
+  line-height: 1.4;
+  padding: 20px 35px 20px 35px;
 }
 
-h1, h2 {
+h2, h3 {
   transition: background-color 0.5s;
   transition-timing-function: ease;
   padding: 20px 35px 20px 35px;
@@ -25,6 +26,7 @@ h2:hover {
   transition: background-color 0.5s;
   transition-timing-function: ease;
   background-color: rgba(0,0,0,0.1);
+  cursor:pointer;
 }
 
 p {
@@ -34,8 +36,9 @@ p {
   margin: 0;
 }
 
-span {
+div .selected {
   color: #ffffff;
+  padding-bottom: 30px;
 }
 
 a {
@@ -106,6 +109,10 @@ path:hover {
   font-weight: 700;
 }
 
+.grey {
+  color: #ccc;
+}
+
 .image-div {
   padding: 0px 35px 35px 35px;
 }
@@ -115,4 +122,18 @@ path:hover {
   object-fit: fill;
   overflow: hidden;
   border-radius: 20px;
+}
+
+.label {
+  background-color: black;
+  font-family: "Work Sans";
+  width: 150px;
+}
+
+.hide {
+  display: none;
+}
+
+.no-wrap {
+  white-space: nowrap;
 }
