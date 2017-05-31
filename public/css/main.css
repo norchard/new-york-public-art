@@ -50,25 +50,6 @@ a:hover {
   color: rgba(0,0,0,0.6);
 }
 
-button {
-  background-color: rgba(0,0,0,0.0);
-  border: 2px solid rgba(0,0,0,0.2);
-  padding: 5px 10px;
-  margin: 10px 35px 35px 35px;
-  color: rgba(0,0,0,0.2);
-  text-transform: uppercase;
-  font-weight: 700;
-  border-radius: 20px;
-  font-family: "macho";
-  font-size: 12px;
-}
-
-button:hover {
-  border-color: rgba(0,0,0,0.6);
-  color: rgba(0,0,0,0.6);
-  cursor: pointer;
-}
-
 path:hover {
   cursor:pointer;
 }
@@ -114,7 +95,7 @@ path:hover {
 }
 
 .image-div {
-  padding: 0px 35px 35px 35px;
+  padding: 0px 35px;
 }
 
 .image {
