@@ -35,7 +35,6 @@ function convertToGeoJson(artData){
       to_date: artObject.to_date,
       description: artObject.description,
       borough: artObject.borough,
-      number: index
     }
   }))
 }
@@ -83,7 +82,7 @@ function drawMap(geojson) {
                       else
                         return 8;
                    }))
-                  .attr("fill", d => color(d.properties.number % 18))
+                  .attr("fill", (d,i) => color(i % 18))
                   .attr("stroke-width", 2)
                   .attr("stroke", "white")
                   .on("click", d => clickHandler(d, map, update))
@@ -95,7 +94,7 @@ function drawMap(geojson) {
                 .enter()
                 .append("text")
                 .attr("class", "label hide")
-                .attr("fill", d => color(d.properties.number % 18))
+                .attr("fill", (d,i) => color(i % 18))
                 .attr("x", (d) => (path.centroid(d)[0] + 10))
                 .attr("y", (d) => (path.centroid(d)[1] + 4))
                 .attr("max-width", "150px")
@@ -218,7 +217,6 @@ imgUrls[['Light Spectrum', 'Antonia A Perez']] = "http://img-cache.oppcdn.com/im
 function getImage(d) {
   var artDiv = d.properties.div
   var artPath = d.properties.path
-  // var artIndex = d.properties.number
   var artIndex = [d.properties.name, d.properties.artist]
 
 
