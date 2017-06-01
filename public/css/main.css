@@ -118,3 +118,28 @@ path:hover {
 .no-wrap {
   white-space: nowrap;
 }
+
+@media only screen and (max-width: 900px) {
+  h1{
+    font-size: 50px;
+  }
+}
+
+@media only screen and (max-width: 640px) {
+  h1{
+    font-size: 40px;
+  }
+
+  #container {
+    width: 100vw;
+    height: 33vh;
+  }
+
+  #text {
+    width: 100vw;
+    height: 67vh;
+    position: absolute;
+    bottom: 0;
+    overflow: auto;
+  }
+}

@@ -5,7 +5,23 @@ const mapAccessToken = 'pk.eyJ1Ijoibm9yY2hhcmQiLCJhIjoiY2oyMHcxNXNhMDUwMTMzbnVkc
 
 d3.json('./data/DPR_PublicArt_001.json', (err, data) => drawMap(convertToGeoJson(data).filter((d) => { return new Date(d.properties.from_date) < new Date() })))
 
+// data set is missing artwork!
+const descension = {
+    "name": "Descension",
+    "artist": "Anish Kapoor",
+    "from_date": "2017-05-03",
+    "to_date": "2017-09-10",
+    "location": null,
+    "description": "<p>As part of its 40th Anniversary season, Public Art Fund brings Descension, one of Anish Kapoor’s most viscerally arresting installations, to New York City for the first time. Sited at Pier 1 in Brooklyn Bridge Park, this massive, continuously spiraling funnel of water will harness one of the most evanescent of materials and create a striking contrast with the adjacent East River.</p><p>Anish Kapoor, among the most influential artists of his generation, has had a career-long engagement with space and the limits of perception. Perhaps best known for his iconic public artworks, his last major outdoor sculpture in New York City was Public Art Fund’s presentation of Sky Mirror, his 35-foot-diameter concave mirror at Rockefeller Center in 2006. With Descension, he has created a dynamic negative space that descends into the ground, disturbing the familiar boundaries of our world. In the midst of a quintessential New York park, Kapoor invites us to experience the sheer perceptual wonder of an ordinary material like water made to behave in an extraordinary way.</p>\r\n\r\n<p>This exhibition is presented by the <a href=\"http://www.nycgovparks.org/exit%CE%91url=https%3A/www.publicartfund.org/\">Public Art Fund</a>.</p>",
+    "borough": "B",
+    "show_large_image": "1",
+    "lat": "40.7030056",
+    "lng": "-73.9980158",
+    "active": "1"
+}
+
 function convertToGeoJson(artData){
+  artData.unshift(descension)
   return artData.map((artObject, index) => ({
     type: "Feature",
     geometry: {
