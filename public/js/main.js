@@ -30,8 +30,8 @@ function drawMap(geojson) {
   var map = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/mapbox/light-v9',
-      center: [-73.9700, 40.7568],
-      zoom: 10
+      center: [-73.9500, 40.770],
+      zoom: 10.3
   })
 
   // Create d3 container to plot artwork points
@@ -133,7 +133,7 @@ function clickHandler(d, map, update) {
   if(closeMe)
     return
 
-  artDiv.node().scrollIntoView()
+  d3.selectAll('div').filter().attr('class', 'hide')
   map.flyTo({center: d.geometry.coordinates})
   artPath.attr('class', 'select')
   artDiv.select('h2').attr('class', 'select')
@@ -148,7 +148,9 @@ function clickHandler(d, map, update) {
       .insert('p', 'p')
       .html(formatDate(start) + ' – ' + formatDate(end))
 
-  getImage(d)
+  getImage(d, artDiv)
+
+  artDiv.node().scrollIntoView()
 }
 
 function httpGetAsync(theUrl, callback) {
@@ -186,7 +188,7 @@ imgUrls[['Black Rock Negative Energy Absorber', 'Rudy Shepherd']] = "https://art
 imgUrls[['Tree Reflections', 'Susan Stair']] = "http://untappedcities.wpengine.netdna-cdn.com/wp-content/uploads/2016/11/Susan-Stair-Tree-Reflections-Untapped-Cities-AFineLyne-2.jpg"
 imgUrls[['Beyond the Edge', 'Phyllis Hammond']] = "http://hammarskjoldplaza.org/dagwp13/wp-content/uploads/2016/11/Hammond-Sculpture-enhanced.jpg"
 imgUrls[['Little Oil Well', 'Martin Ramone Delossantos']] = "http://untappedcities.wpengine.netdna-cdn.com/wp-content/uploads/2016/11/Martin-Ramone-Delossantos-sculpture-Untapped-Cities-AFineLyne.jpg"
-imgUrls[['Spirit of New York City', 'Yasumitsu Morito']] = "http://blancavalbuena.com/wp-content/uploads/2013/08/yasumitsu-morito-spirit-riverside-park-940x624.jpg"
+imgUrls[['Spirit of New York City', 'Yasumitsu Morito']] = "http://payload491.cargocollective.com/1/22/706340/12120036/_MG_3095-copy_2000.jpg"
 imgUrls[['Wishing Well', 'Amanda Long']] = "https://i.vimeocdn.com/video/627167017_780x439.jpg"
 imgUrls[['New York Made: Stanton Street Courts', 'KAWS']] = "http://s3.amazonaws.com/nikeinc/assets/63798/MINY-KAWS-COURT-3_native_1600.jpg?1478723948"
 imgUrls[['Double Doily', 'Jennifer Cecere']] = "http://media-cache-ec0.pinimg.com/736x/a1/1c/32/a11c325092c6a74cba744e4267945181.jpg"
@@ -213,6 +215,7 @@ function getImage(d) {
       var img = imgDiv.append('img')
                       .attr('class','image')
                       .attr('id','image')
+                      .on('load', () => artDiv.node().scrollIntoView())
 
       img.attr('src', imgUrls[artIndex])
     }
@@ -220,8 +223,8 @@ function getImage(d) {
 
   if (imgUrls[artIndex]) {
     addImage(artDiv)
-    return
   }
+  return // Don't make API call - hit limits
 
   var searchParams = {
     count: 1,
