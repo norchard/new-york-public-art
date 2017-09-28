@@ -19,6 +19,7 @@ function convertToGeoJson(artData){
       to_date: artObject.to_date,
       description: artObject.description,
       borough: artObject.borough,
+      url: artObject.url
     }
   }))
 }
@@ -147,103 +148,16 @@ function clickHandler(d, map, update) {
       .insert('p', 'p')
       .html(formatDate(start) + ' – ' + formatDate(end))
 
-  getImage(d, artDiv)
+  var imgDiv = artDiv.select('div.selected')
+                     .append('div')
+                     .attr('class','image-div')
+
+  var img = imgDiv.append('img')
+                  .attr('class','image')
+                  .attr('id','image')
+                  .on('load', () => artDiv.node().scrollIntoView())
+
+  img.attr('src', d.properties.url)
 
   artDiv.node().scrollIntoView()
-}
-
-function httpGetAsync(theUrl, callback) {
-  const subKey = '03235899f7754611a972827f7ccfc286'
-  var xhr = new XMLHttpRequest()
-  xhr.open("GET", theUrl, true) // true for asynchronous
-  xhr.setRequestHeader('Ocp-Apim-Subscription-Key', subKey)
-  xhr.onreadystatechange = () => {
-    if (xhr.readyState == 4 && xhr.status == 200)
-      callback(xhr.responseText)
-  }
-  xhr.send(null)
-}
-
-function toQueryString(paramsObject) {
-  return Object
-    .keys(paramsObject)
-    .map(key => `${encodeURIComponent(key)}=${paramsObject[key]}`)
-    .join('&')
-}
-
-var imgUrls = {}
-imgUrls[["Descension", "Anish Kapoor"]] = "http://www.lonelyplanet.com/news/wp-content/uploads/2017/05/Anish-Kapoors-latest-art-installation-at-Brooklyn-Bridge-Park-James-Ewing.jpg"
-imgUrls[['Untitled', 'Gabriel Sierra']] = ""
-imgUrls[['Monumental Sculptures at Prospect Park', 'Carole Eisner']] = "https://assets.dnainfo.com/generated/photo/2016/05/skipper-by-carole-eisner-1463519634.JPG/extralarge.jpg"
-imgUrls[['Boogie Down Booth', 'Chat Travieso']] = "https://www.nycgovparks.org/sub_things_to_do/attractions/public_art/images/fullsize/chat-travieso-boogie-down-booth-lg.jpg"
-imgUrls[['Model to Monument (M2M)', 'Art Students League']] = "https://www.theartstudentsleague.org/wp-content/uploads/2016/05/M2M-0706-fx-975x650.jpg"
-imgUrls[['TotemOh', 'Kenny Scharf']] = "https://media.timeout.com/images/103592432/630/472/image.jpg"
-imgUrls[['Rene', 'Jacob Farber']] = "https://www.nycgovparks.org/sub_things_to_do/attractions/public_art/images/fullsize/jacob-farber-rene-lg__57b6fd6234e8f.jpg"
-imgUrls[['Bronx Tracks', 'Diana Perea']] = "https://www.nycgovparks.org/sub_things_to_do/attractions/public_art/images/fullsize/diana-perea-bronx-tracks-lg__57c44a9fe1558.jpg"
-imgUrls[['Who\'s Afraid to Listen to Red, Black and Green?', 'Kevin Beasley']] = "http://uptowncollective.com/wp-content/uploads/2017/05/UC-Kevin-Beasley-Who-is-Afraid-to-Listen-to-Red-Black-and-Green.jpg"
-imgUrls[['A particularly elaborate imba yokubikira, or kitchen house, stands locked up while its owners live in diaspora', 'Simone Leigh']] = "https://news.artnet.com/app/news-upload/2016/08/Simone-Leigh.jpeg"
-imgUrls[['Sentra', 'Kori Newkirk']] = "https://www.nycgovparks.org/sub_things_to_do/attractions/public_art/images/fullsize/kori-newkirk-sentra-lg__57c5a8207d160.jpg"
-imgUrls[['Black Rock Negative Energy Absorber', 'Rudy Shepherd']] = "https://artsandarchitecture.psu.edu/sites/artsandarchitecture.psu.edu/files/black-rock-first-park-620x465.jpg"
-imgUrls[['Tree Reflections', 'Susan Stair']] = "http://untappedcities.wpengine.netdna-cdn.com/wp-content/uploads/2016/11/Susan-Stair-Tree-Reflections-Untapped-Cities-AFineLyne-2.jpg"
-imgUrls[['Beyond the Edge', 'Phyllis Hammond']] = "http://hammarskjoldplaza.org/dagwp13/wp-content/uploads/2016/11/Hammond-Sculpture-enhanced.jpg"
-imgUrls[['Little Oil Well', 'Martin Ramone Delossantos']] = "http://untappedcities.wpengine.netdna-cdn.com/wp-content/uploads/2016/11/Martin-Ramone-Delossantos-sculpture-Untapped-Cities-AFineLyne.jpg"
-imgUrls[['Spirit of New York City', 'Yasumitsu Morito']] = "http://payload491.cargocollective.com/1/22/706340/12120036/_MG_3095-copy_2000.jpg"
-imgUrls[['Wishing Well', 'Amanda Long']] = "https://i.vimeocdn.com/video/627167017_780x439.jpg"
-imgUrls[['New York Made: Stanton Street Courts', 'KAWS']] = "http://s3.amazonaws.com/nikeinc/assets/63798/MINY-KAWS-COURT-3_native_1600.jpg?1478723948"
-imgUrls[['Double Doily', 'Jennifer Cecere']] = "http://media-cache-ec0.pinimg.com/736x/a1/1c/32/a11c325092c6a74cba744e4267945181.jpg"
-imgUrls[['...and We Breath', 'Art Students League']] = ""
-imgUrls[['Birdhouse Repo', 'Aaron Schraeter']] = "https://assets.dnainfo.com/photo/2017/2/1486411314-290242/extralarge.jpg"
-imgUrls[['Hippo Ballerina', 'Bjorn Skaarup']] = "http://www.moment-newyork.de/wp-content/uploads/GrosseTiere2.jpg"
-imgUrls[['Open House', 'Liz Glynn']] = "https://img.artrabbit.com/events/liz-glynn-open-house/images/CmGXWWBWIwFZ/1500x1007/GlynnL-3132-jpg.jpg"
-imgUrls[['the floaters', 'Henry Taylor']] = "http://bestblacknews.com/wp-content/uploads/2017/03/taylor-thefloaters.jpg"
-imgUrls[['Light Spectrum', 'Antonia A Perez']] = "http://img-cache.oppcdn.com/img/v1.0/s:50354/t:QkxBTksrVEVYVCtIRVJF/p:12/g:tl/o:2.5/a:50/q:90/1919x1215-cnz4QjzghnRGHqXO.jpg/1919x1215/5e72c7ba1e47c11caa84586020d31eba.jpg"
-
-function getImage(d) {
-  var artDiv = d.properties.div
-  var artPath = d.properties.path
-  var artIndex = [d.properties.name, d.properties.artist]
-
-
-  function addImage(artDiv){
-    if (imgUrls[artIndex] != ""){
-      var imgDiv = artDiv.select('div.selected')
-                         .append('div')
-                         .attr('class','image-div')
-
-      var img = imgDiv.append('img')
-                      .attr('class','image')
-                      .attr('id','image')
-                      .on('load', () => artDiv.node().scrollIntoView())
-
-      img.attr('src', imgUrls[artIndex])
-    }
-  }
-
-  if (imgUrls[artIndex]) {
-    addImage(artDiv)
-  }
-  return // Don't make API call - hit limits
-
-  var searchParams = {
-    count: 1,
-    aspect: 'wide',
-    mkt: 'en-us',
-    imageType: 'Photo',
-    size: 'large',
-    q: `${d.properties.name.replace(/\s/g,'+')}+%22${d.properties.artist.replace(/\s/g,'+')}%22+New+York+City`
-  }
-
-  var searchURL = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?q=' + toQueryString(searchParams)
-
-
-  httpGetAsync(searchURL, response => {
-    var data = JSON.parse(response)
-
-    if (data.value.length > 0) {
-      imgUrls[artIndex] = data.value[0].contentUrl
-      addImage(artDiv)
-    } else {
-      imgUrls[artIndex] = ""
-    }
-  })
 }
