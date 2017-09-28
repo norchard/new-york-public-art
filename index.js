@@ -3,7 +3,7 @@ const app = express()
 const port = 3000
 
 app.get('/', (req, res) => {
-  res.send('hello')
+  res.sendFile('index.html', { root: __dirname + "/public" } )
 })
 
 app.use(express.static('public'))

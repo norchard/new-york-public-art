@@ -1,2 +1,5 @@
 .DS_Store
 .tags*
+node_modules
+.env
+cache.json

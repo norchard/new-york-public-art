@@ -1,6 +1,3 @@
-// TODO: Update data source and process data:
-// 'https://www.nycgovparks.org/bigapps/DPR_PublicArt_001.json'
-
 const mapAccessToken = 'pk.eyJ1Ijoibm9yY2hhcmQiLCJhIjoiY2oyMHcxNXNhMDUwMTMzbnVkcmJ1eWszdSJ9.Dx5NmmL0h6xm3cUE5jLuJg'
 
 d3.json('./data/DPR_PublicArt_001.json', (err, data) => drawMap(convertToGeoJson(data).filter((d) => { return new Date(d.properties.from_date) < new Date() && d.geometry.coordinates[0] != null })))
