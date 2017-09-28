@@ -1,5 +1,10 @@
 #!/usr/bin/env ruby
 
+# Script running daily in cronjob on Digital Ocean VM
+# to pull data from NYC Open Data source and upload to S3
+# because NYC Open Data does not have cross-origin request (CORS) headers
+# Also, adding image URLs to data with Google custom search API
+
 require 'net/http'
 require 'aws-sdk'
 require 'dotenv'
@@ -23,8 +28,6 @@ cache = JSON.parse(File.read('./cache.json'))
 response = httpGet('https://www.nycgovparks.org/bigapps/DPR_PublicArt_001.json')
 data = JSON.parse(response.body)
 data.each do |artwork|
-
-  print '.'
   artwork["name"] = "" if !artwork["name"]
   artwork["artist"] = "" if !artwork["artist"]
 
@@ -39,8 +42,8 @@ data.each do |artwork|
        :num => 1,
        :tbs => 'iar:w',
        :q => "#{artwork["name"].downcase.gsub(/\s/, '+')}" +
-            "+#{artwork["artist"].downcase.gsub(/\s/, '+')}" +
-            "+new+york+city"
+             "+#{artwork["artist"].downcase.gsub(/\s/, '+')}" +
+             "+new+york+city"
      }
     search_params_string = search_params.map{ |key, value| "#{key}=#{value}"}.join('&')
     searchURL = "https://www.googleapis.com/customsearch/v1?#{search_params_string}"
@@ -59,17 +62,3 @@ s3 = Aws::S3::Resource.new(region:'us-east-1')
 bucket = s3.bucket(ENV['S3_BUCKET'])
 obj = bucket.object('data/DPR_PublicArt_001.json')
 obj.put({acl: "public-read", body: data_body})
-
-  # BING
-  # search_params = {
-  #   :count => 1,
-  #   :aspect => "wide",
-  #   :mkt => "en-us",
-  #   :imageType => "Photo",
-  #   :size => "large",
-  #   :q => "#{artwork["name"].downcase.gsub(/\s/, '+') if artwork["name"]}"\
-  #         "+#{artwork["artist"].downcase.gsub(/\s/, '+') if artwork["artist"]}"\
-  #         "+new+york+city"
-  # }
-  # searchHeaders = {'Ocp-Apim-Subscription-Key' => SUBKEY} 03235899f7754611a972827f7ccfc286
-  # searchURL = "https://api.cognitive.microsoft.com/bing/v5.0/images/search?q=#{toQueryString(search_params)}"
